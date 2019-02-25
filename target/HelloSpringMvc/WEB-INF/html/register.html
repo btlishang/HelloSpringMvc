@@ -1,0 +1,202 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge, chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>注册页面</title>
+    <meta name="keywords" content="" />
+    <meta name="description" content="" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="stylesheet" href="../../css/style.longxiao.min.css"/>
+</head>
+
+<body>
+<div class="page-header">
+    <div class="page-inner">
+        <div class="site-logo"><a href="http://www.longxiao.com" title="龙校">龙校</a></div>
+    </div>
+</div>
+<div class="blank20"></div>
+<div class="content contentlogin">
+    <div class="loginhead">
+        <h1>会员注册</h1>
+    </div>
+    <div class="loginBlock">
+        <div class="loginstart clearfix">
+            <p>我已有账号，<a href="/userService/userlogin">登录</a></p>
+        </div>
+        <form action="/userService/register" method="post" onsubmit="return checkregister()">
+            <div class="loginInfo" id="loginInfo">
+                <div class="inputbar">
+                    <div class="bar">
+                        <label>
+                            <span class="alt">昵　称：</span>
+                            <input type="text" name="nickname" id="nickname" class="inputInforeg" maxlength="11"/>
+                            <img src="img/icon_dice_selected.png" alt="" onclick="getRandomNickname()"/>
+                        </label>
+                    </div>
+                </div>
+                <div class="inputbar">
+                    <div class="bar">
+                        <label>
+                            <span class="alt">手机号：</span>
+                            <input type="number" name="username" id="username" class="inputInfo"/>
+                        </label>
+                    </div>
+                </div>
+                <div class="inputbar">
+                    <div class="bar">
+                        <label>
+                            <span class="alt">验证码：</span>
+                            <input type="text" name="code" id="code" class="inputcode"/>
+                            <input class="getcode" id="getcode" value="获取验证码"/>
+                        </label>
+                    </div>
+                </div>
+                <div class="inputbar">
+                    <div class="bar">
+                        <label>
+                            <span class="alt">密　码：</span>
+                            <input type="password" name="password" id="password" class="inputInfo"/>
+                        </label>
+                    </div>
+                </div>
+                <div class="inputslip">
+                    <input type="checkbox" class="inputcheck"/>
+                    <span>我已阅读并同意<a href="/userService/protocoluser" target="_blank">《龙杯用户注册协议》</a></span>
+                </div>
+                <button type="submit" class="submitbtn">注册</button>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="blank40"></div>
+<div class="page-footer">
+    <div class="page-inner">
+        <div class="pf-left">
+            <p class="phone">010-62981936</p>
+            <p class="email">sevice@longbei.com</p>
+            <p class="address">北京市海淀区上地三街金隅嘉华大厦B座905室</p>
+            <div class="copyright">Copyright &copy; 2018 longxiao.com 北京龙杯信息技术有限公司 版权所有 All Rights Reserved<br/>京ICP备16013266号</div>
+        </div>
+        <div class="pf-right">
+            <div class="qrcode down"></div>
+            <div class="qrcode wx"></div>
+        </div>
+    </div>
+</div>
+<script src="../../libs/jquery-1.12.4.min.js"></script>
+<script src="libs/jquery.cookie.min.js"></script>
+<script src="../../js/jquery.longTools.min.js"></script>
+<script src="libs/md5.js"></script>
+<script>
+var countdown = 60;
+var sending = false;
+
+
+function getRandomNickname() {
+    $.ajax({
+       type: "GET",
+        url: "/userService/getRandomNickname",
+        success:function (res) {
+          $("#nickname").val(res.data);
+        }
+    });
+}
+
+$(function() {
+    countdown = $.cookie('validateCodeCountdown');
+    if (countdown > 0) {
+        sending = true;
+        var obj = $("#getcode");
+        obj.attr("disabled", true);
+        obj.val("重新发送(" + countdown + ")");
+        settime(obj);
+    };
+    $(window).on('beforeunload unload', function() {
+        if (sending) {
+            console.log(countdown);
+            $.cookie('validateCodeCountdown', countdown);
+        }
+        if (!sending) {
+            console.log(countdown);
+            $.cookie('validateCodeCountdown', 0);
+        }
+    });
+});
+
+function send() {
+    sending = true;
+    var username = $("#username").val();
+    if (username.length == 0){
+        alert("请填写手机号");
+        return;
+    }
+    $.ajax({
+        type: "GET",
+        data: {phone:username},
+        url: "/userService/sendsms",
+        success:function (res) {
+            if (res.code == 0){
+                var obj = $("#getcode");
+                settime(obj);
+            } else {
+                alert(res.rtnInfo);
+            }
+        }
+    });
+
+}
+
+function settime(obj) { //发送验证码倒计时
+    if (countdown == 0) {
+        obj.attr('disabled', false);
+        obj.val("获取验证码");
+        countdown = 60;
+        sending = false;
+        return;
+    } else {
+        obj.val("重新发送(" + countdown + ")");
+        obj.attr('disabled', true);
+        countdown--;
+    }
+    setTimeout(function() {
+        settime(obj);
+    }, 1000)
+};
+$("#getcode").click(function() {
+    send();
+});
+
+//验证
+var checkregister = function() {
+    if ($("#username").val() == "") {
+        $.longAlert({ msg: '昵称不能为空！' });
+        $("#username").focus();
+        return false;
+    } else if ($("#phonenum").val() == "") {
+        $.longAlert({ msg: '手机号不能为空！' });
+        $("#phonenum").focus();
+        return false;
+    // } else if ($("#code").val() == "") {
+    //     $.longAlert({ msg: '验证码不能为空！' });
+    //     $("#code").focus();
+    //     return false;
+    } else if ($("#password").val() == "") {
+        $.longAlert({ msg: '密码不能为空！' });
+        $("#password").focus();
+        return false;
+    } else if (!$(".inputcheck").is(":checked")) {
+        $.longAlert({ msg: '需同意《龙杯用户注册协议》' });
+        return false;
+    }
+    $("#password").val(hex_md5($("#password").val()));
+    return true;
+};
+</script>
+</body>
+
+</html>

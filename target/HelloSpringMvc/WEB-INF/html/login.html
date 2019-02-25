@@ -1,0 +1,117 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge, chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>登录页面</title>
+    <meta name="keywords" content="" />
+    <meta name="description" content="" />
+    <link rel="shortcut icon" href="/userService/favicon.ico" />
+    <link rel="stylesheet" href="/static/css/style.longxiao.min.css"/>
+    <script>
+        function flushCode() {
+            var random = Math.random();
+            $("#imgcode").attr("src","/userService/validateCode?r="+random);
+        }
+    </script>
+</head>
+
+<body>
+<div class="page-header">
+    <div class="page-inner">
+        <div class="site-logo"><a href="http://www.longxiao.com" title="龙校">龙校</a></div>
+    </div>
+</div>
+<div class="blank20"></div>
+<div class="content contentlogin">
+    <div class="loginhead">
+        <h1>会员登录</h1>
+    </div>
+    <div class="loginBlock">
+        <form action="/userService/userlogin" method="post" onsubmit="return checklogin()">
+        <div class="loginInfo" id="loginInfo">
+            <div style="text-align: center;padding-bottom: 5px;">
+                <p id="erromsg" style="color: red"></p>
+            </div>
+            <div class="inputbar">
+                <div class="bar">
+                    <label>
+                        <span class="alt">手机号：</span>
+                        <input type="text" name="username" id="phonenum" class="inputInfo" value="" />
+                    </label>
+                </div>
+            </div>
+            <div class="inputbar">
+                <div class="bar">
+                    <label>
+                        <span class="alt">密　码：</span>
+                        <input type="password" name="password" id="password" class="inputInfo" />
+                    </label>
+                </div>
+            </div>
+            <!--<div class="inputbar">-->
+                <!--<div class="bar">-->
+                    <!--<label>-->
+                        <!--<span class="alt">验证码：</span>-->
+                        <!--<input type="text" name="code" id="code" class="inputcode" />-->
+                        <!--<img id="imgcode" src="/userService/validateCode" onclick="flushCode()" class="codesymbol"/>-->
+                    <!--</label>-->
+                <!--</div>-->
+            <!--</div>-->
+            <div class="inputslip">
+                <a href="getpassword.html" class="forgeword">忘记密码?</a>
+                <a href="register.html" class="registernow">立即注册</a>
+            </div>
+            <input type="hidden" value="http://longbei.com:80" name="redirectUrl" />
+            <input type="hidden" value="" name="sessionid" />
+            <button type="submit" class="submitbtn">提交登录</button>
+        </div>
+        </form>
+    </div>
+</div>
+<div class="blank40"></div>
+<div class="page-footer">
+    <div class="page-inner">
+        <div class="pf-left">
+            <p class="phone">010-62981936</p>
+            <p class="email">sevice@longbei.com</p>
+            <p class="address">北京市海淀区上地三街金隅嘉华大厦B座905室</p>
+            <div class="copyright">Copyright &copy; 2018 longxiao.com 北京龙杯信息技术有限公司 版权所有 All Rights Reserved<br/>京ICP备16013266号</div>
+        </div>
+        <div class="pf-right">
+            <div class="qrcode down"></div>
+            <div class="qrcode wx"></div>
+        </div>
+    </div>
+</div>
+<script src="/static/libs/jquery-1.12.4.min.js"></script>
+<script src="libs/md5.js"></script>
+<script src="/static/js/jquery.longTools.min.js"></script>
+<script>
+    //验证
+    var checklogin = function() {
+        if ($("#phonenum").val() == "") {
+            $.longAlert({ msg: '手机号不能为空！' });
+            $("#phonenum").focus();
+            return false;
+        }
+        else if ($("#password").val() == "") {
+            $.longAlert({ msg: '密码不能为空！' });
+            $("#password").focus();
+            return false;
+        }
+        else if ($("#code").val() == "") {
+            $.longAlert({ msg: '验证码不能为空！' });
+            $("#code").focus();
+            return false;
+        }
+        $("#password").val(hex_md5($("#password").val()));
+        return true;
+    };
+</script>
+</body>
+
+</html>
