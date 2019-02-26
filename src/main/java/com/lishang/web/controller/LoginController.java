@@ -1,5 +1,6 @@
 package com.lishang.web.controller;
 
+import com.lishang.web.common.ConstantUtils;
 import com.lishang.web.entity.UserInfo;
 import com.lishang.web.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +40,7 @@ public class LoginController {
         }
         // 登录成功
         else {
-            httpServletRequest.getSession().setAttribute("userInfo",userInfo);
+            httpServletRequest.getSession().setAttribute(ConstantUtils.SESSION_USER,userInfo);
         }
         return null;
     }

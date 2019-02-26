@@ -1,5 +1,6 @@
 package com.lishang.web.interceptor;
 
+import com.lishang.web.common.ConstantUtils;
 import com.lishang.web.entity.UserInfo;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -14,12 +15,12 @@ import org.springframework.web.servlet.ModelAndView;
 public class LoginInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(javax.servlet.http.HttpServletRequest httpServletRequest, javax.servlet.http.HttpServletResponse httpServletResponse, Object o) throws Exception {
+        UserInfo userInfo =(UserInfo) httpServletRequest.getSession().getAttribute(ConstantUtils.SESSION_USER);
 
-        UserInfo userInfo =(UserInfo) httpServletRequest.getSession().getAttribute("userInfo");
-
-        // 未登录
+        // 未登录重定向到登录页
         if (userInfo == null){
             httpServletResponse.sendRedirect("/login");
+            return false;
         }
 
         // 放行
